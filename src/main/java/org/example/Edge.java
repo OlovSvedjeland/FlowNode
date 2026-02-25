@@ -2,34 +2,34 @@ package org.example;
 
 public class Edge {
 
-    DependencyType dependencyType;
-    Task start;
-    Task end;
+    Task parent;
+    Task child;
+    int startLag;
+    int finishLag;
 
-    public Edge(Task start, Task end) {
-        this.dependencyType = null;
-        this.start = start;
-        this.end = end;
+    public Edge(Task child, Task parent) {
+        this.parent = child;
+        this.child = parent;
     }
 
-    public void assignDependencyType(DependencyType dependencyType) {
-        this.dependencyType = dependencyType;
+    int getStartLag() {
+        return startLag;
     }
 
-    public Task getStart() {
-        return start;
+    void setStartLag(int startLag) {
+        this.startLag = startLag;
     }
 
-    public Task getEnd() {
-        return end;
+    int getFinishLag() {
+        return finishLag;
     }
 
-    public void setDependencyType(DependencyType dependencyType) {
-        this.dependencyType = dependencyType;
+    public Task getParent() {
+        return parent;
     }
 
-    public DependencyType getDependencyType() {
-        return dependencyType;
+    public Task getChild() {
+        return child;
     }
 }
 

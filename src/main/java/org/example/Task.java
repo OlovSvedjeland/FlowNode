@@ -4,51 +4,38 @@ public class Task {
 
     String description;
 
-    int baseStartTime;
+    int baseLineStart;
     int actualStartTime;
     int requiredTime;
     int duration;
 
-    // phase out these
-    int actualEndTime;
-    int baseEndTime;
-
     public Task(String description) {
         this.description = description;
-        this.baseStartTime = 0;
+        this.baseLineStart = 0;
         this.requiredTime = 0;
         this.actualStartTime = 0;
     }
 
-    public int getBaseStartTime() {
-        return baseStartTime;
+    public int getBaseLineStart() {
+        return baseLineStart;
     }
-    public void setBaseStartTime(int baseStartTime) {
-        this.baseStartTime = Math.max(0, baseStartTime);
+    public void setBaseLineStart(int baseLineStart) {
+        this.baseLineStart = Math.max(0, baseLineStart);
     }
 
     public int getRequiredTime() {
-        return Math.max(0, requiredTime);
+        return requiredTime;
     }
     public void setRequiredTime(int requiredTime) {
         this.requiredTime = Math.max(0, requiredTime);
     }
-    public int getDuration() {
-        return duration;
-    }
 
     public void setActualStartTime(int actualStartTime) {
-        this.actualStartTime = Math.max(baseStartTime, actualStartTime);
+        this.actualStartTime = Math.max(baseLineStart, actualStartTime);
     }
+
     public int getActualStartTime() {
         return actualStartTime;
     }
 
-    public int getEndtime() {
-        return actualStartTime + duration;
-    }
-
-    public int getEffectiveness() {
-        return duration / requiredTime;
-    }
 }
