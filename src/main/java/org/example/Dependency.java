@@ -2,7 +2,7 @@ package org.example;
 
 public interface Dependency {
 
-    // later, edges will implement these such that start-delays or finish-delays will be a product of preRequisits
+    // TODO : since edges represents relationships between tasks, lags in start or end time is a property of an edge
     public int startlag(Task start, Task end);
     public int endLag(Task start, Task end);
 
