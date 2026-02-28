@@ -31,5 +31,7 @@ public class Edge {
     public Task getChild() {
         return child;
     }
+
+
 }
 
