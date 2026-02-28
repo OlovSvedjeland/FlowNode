@@ -2,6 +2,8 @@ package org.example;
 
 import java.util.*;
 
+import static javax.swing.UIManager.get;
+
 public class Project {
 
     // prerequisite -> incoming edges (all tasks that depend on it)
@@ -10,24 +12,37 @@ public class Project {
     // dependent -> outgoing edges (all prerequisites it depends on)
     private final Map<Task, List<Edge>> outgoingEdges = new HashMap<>();
 
+    private final List<Task> allTasks = new ArrayList<>();
+
     public void addTask(String description) {
         Task task = new Task(description);
         incomingEdges.put(task, new ArrayList<>());
         outgoingEdges.put(task, new ArrayList<>());
+        allTasks.add(task);
+    }
+
+    public List<Task> getAllTasks() {
+        return allTasks;
+    }
+
+    public void removeTask(String description) {
+        Task t = getTaskByDescription(description);
+        if (t == null) {
+            System.out.println("No such task");
+            return;
+        }
+        incomingEdges.remove(t);
+        outgoingEdges.remove(t);
+        allTasks.remove(t);
     }
 
     // child depends on parent => edge: child -> parent
     public void addDependency(Task child, Task parent) {
-        Edge e = new Edge(child, parent); // from=dependent, to=prerequisite
+        Edge e = new Edge(child, parent);
+        incomingEdges.get(child).add(e);
+        outgoingEdges.get(parent).add(e);
 
-        if (incomingEdges.containsKey(child)) {
-            incomingEdges.get(child).add(e);
-        } else incomingEdges.put(child, new ArrayList<>());
-        if (outgoingEdges.containsKey(parent)) {
-            outgoingEdges.get(parent).add(e);
-        } else outgoingEdges.put(parent, new ArrayList<>());
-
-        propagateDownActualStartTimes(parent);
+        propagateDownComputedStartTimes(parent);
     }
 
     public Edge getEdge(Task child, Task parent) {
@@ -50,13 +65,12 @@ public class Project {
                 outgoingEdges.get(parent).remove(e);
             }
         }
-        propagateDownActualStartTimes(child);
+        propagateDownComputedStartTimes(child);
     }
 
     public void changeDependency(Task child, Task parent, Task newParent) {
         removeDependency(child, parent);
         addDependency(child, newParent);
-        propagateDownActualStartTimes(child);
     }
 
     public List<Edge> incoming(Task prerequisite) {
@@ -85,17 +99,17 @@ public class Project {
 
     // ----- Scheduling bits -----
 
-    public int requiredActualStartFromPrerequisite(Task dependent, Task prerequisite) {
-        int prereqEnd = prerequisite.getActualStartTime() + prerequisite.getRequiredTime();
-        return Math.max(dependent.getBaseLineStart(), prereqEnd);
+    public int requiredComputedStartFromPrerequisite(Task dependent, Task prerequisite) {
+        int prereqEnd = prerequisite.getComputedStart() + prerequisite.getRequiredTime();
+        return Math.max(dependent.getEarliestStart(), prereqEnd);
     }
 
     public Task mostDelayingPrerequisite(Task dependent) {
         Task worst = null;
-        int maxStart = dependent.getBaseLineStart();
+        int maxStart = dependent.getEarliestStart();
 
         for (Task prereq : prerequisites(dependent)) {
-            int candidate = requiredActualStartFromPrerequisite(dependent, prereq);
+            int candidate = requiredComputedStartFromPrerequisite(dependent, prereq);
             if (candidate > maxStart) {
                 maxStart = candidate;
                 worst = prereq;
@@ -104,13 +118,19 @@ public class Project {
         return worst;
     }
 
-    public void setNewBaseLineStart(Task task, int time) {
-        task.setBaseLineStart(time);
-        propagateDownActualStartTimes(task);
+    public void setEarliestStart(Task task, int time) {
+        task.setEarliestStart(time);
+        propagateDownComputedStartTimes(task);
+    }
+
+    public void recomputeAllTasks() {
+        for (Task t : allTasks) {
+            propagateDownComputedStartTimes(t);
+        }
     }
 
     // Propagate to tasks that depend on 'root'
-    public void propagateDownActualStartTimes(Task root) {
+    public void propagateDownComputedStartTimes(Task root) {
         Queue<Task> queue = new ArrayDeque<>();
         queue.add(root);
 
@@ -119,15 +139,30 @@ public class Project {
 
             Task worstPrereq = mostDelayingPrerequisite(t);
             int newActual = (worstPrereq == null)
-                    ? t.getBaseLineStart()
-                    : requiredActualStartFromPrerequisite(t, worstPrereq);
+                    ? t.getEarliestStart()
+                    : requiredComputedStartFromPrerequisite(t, worstPrereq);
 
-            if (newActual != t.getActualStartTime()) {
-                t.setActualStartTime(newActual);
+            if (newActual != t.getComputedStart()) {
+                t.setComputedStart(newActual);
 
                 // when a task changes, update tasks that DEPEND ON IT
                 queue.addAll(dependents(t));
             }
         }
+    }
+
+    public Task getTaskByDescription(String description) {
+        String needle = description.trim();
+
+        for (Task task : allTasks) {
+            if (task.getDescription().trim().equals(needle)) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    public int getMinimumCompletionTime(Task from, Task to) {
+        return 0;
     }
 }

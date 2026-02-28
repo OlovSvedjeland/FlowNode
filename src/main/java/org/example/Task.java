@@ -4,23 +4,27 @@ public class Task {
 
     String description;
 
-    int baseLineStart;
-    int actualStartTime;
+    int earliestStart;
+    int computedStart;
     int requiredTime;
-    int duration;
+
 
     public Task(String description) {
         this.description = description;
-        this.baseLineStart = 0;
+        this.earliestStart = 0;
         this.requiredTime = 0;
-        this.actualStartTime = 0;
+        this.computedStart = 0;
     }
 
-    public int getBaseLineStart() {
-        return baseLineStart;
+    public String getDescription() {
+        return description;
     }
-    public void setBaseLineStart(int baseLineStart) {
-        this.baseLineStart = Math.max(0, baseLineStart);
+
+    public int getEarliestStart() {
+        return earliestStart;
+    }
+    public void setEarliestStart(int earliestStart) {
+        this.earliestStart = Math.max(0, earliestStart);
     }
 
     public int getRequiredTime() {
@@ -30,12 +34,12 @@ public class Task {
         this.requiredTime = Math.max(0, requiredTime);
     }
 
-    public void setActualStartTime(int actualStartTime) {
-        this.actualStartTime = Math.max(baseLineStart, actualStartTime);
+    public void setComputedStart(int computedStart) {
+        this.computedStart = Math.max(earliestStart, computedStart);
     }
 
-    public int getActualStartTime() {
-        return actualStartTime;
+    public int getComputedStart() {
+        return computedStart;
     }
 
 }
