@@ -6,5 +6,4 @@ public interface Dependency {
     public int startlag(Task start, Task end);
     public int endLag(Task start, Task end);
 
-
 }

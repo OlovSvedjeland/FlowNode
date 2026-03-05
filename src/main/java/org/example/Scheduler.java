@@ -10,7 +10,7 @@ public class Scheduler {
     Project project;
     List<Participant> participants;
     Map<Participant, List<Task>> assignedTo = new HashMap<>();
-    Map<Participant, List<Task>> unavailableTo = new HashMap<>();
+    Map<Participant, List<Task>> unableTo = new HashMap<>();
 
     /* TODO implement functionality for these
     // Map<Task, List<Participant>> assignedToTask = new HashMap<>();
@@ -23,11 +23,11 @@ public class Scheduler {
     }
 
     public boolean isParticipating(Participant p) {
-        return !participants.contains(p);
+        return participants.contains(p);
     }
 
-    public boolean notAvailableForTask(Participant p, Task t) {
-        return unavailableTo.get(p).contains(t) || !(p == null) || !(t == null);
+    public boolean notAbleForTask(Participant p, Task t) {
+        return unableTo.get(p).contains(t) || !(p == null) || !(t == null);
     }
 
     public boolean isDoingNothing(Participant p) {
@@ -39,7 +39,7 @@ public class Scheduler {
             System.out.println(p.getName() + "is not participating");
             return;
         }
-        if (notAvailableForTask(p,t)) {
+        if (notAbleForTask(p, t)) {
             System.out.println("not available to assign " + p.getName() + " to task");
             return;
         }
@@ -47,9 +47,6 @@ public class Scheduler {
         if (isDoingNothing(p)) {
             List<Task> tasks = new ArrayList<>();
             assignedTo.put(p, tasks);
-        } else {
-            List<Task> tasks = assignedTo.get(p);
-            tasks.add(t);
         }
     }
 }
